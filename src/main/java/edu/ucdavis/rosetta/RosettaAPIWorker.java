@@ -1,13 +1,13 @@
 package edu.ucdavis.rosetta;
 
-// import java.net.URI;
-// import java.net.http.HttpClient;
-// import java.net.http.HttpRequest;
-// import java.net.http.HttpRequest.BodyPublishers;
-// import java.net.http.HttpResponse;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
 
-// import com.fasterxml.jackson.databind.JsonNode;
-// import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 
@@ -68,8 +68,64 @@ public class RosettaAPIWorker {
         //Var for Return Status
         boolean bTokenStatus = true;
 
-        
+        //Check Token Expiration
+        if(LocalDateTime.now().plusMinutes(1).isAfter(Expires_In))
+        {
 
+            //HttpClient for API Call to Rosetta API
+            try(HttpClient raHttpClient  = HttpClient.newHttpClient())
+            {
+
+                //Initiate Object Mapper to Parse Returned Json
+                ObjectMapper joMapper = new ObjectMapper();
+
+                //Build Request with Custom Header for OAuth Call
+                HttpRequest raHttpRequest = HttpRequest.newBuilder()
+                        .uri(URI.create(Token_Url))
+                        .header("client_id", _Client_ID)
+                        .header("client_secret", _Client_Secret)
+                        .header("grant_type","CLIENT_CREDENTIALS")
+                        .header("scope",_OAuth_Scopes)
+                        .POST(BodyPublishers.noBody())
+                        .build();
+
+                
+                //Send Request via HTTP Client
+                HttpResponse<String> raHttpResponse = raHttpClient.send(raHttpRequest, HttpResponse.BodyHandlers.ofString());
+
+                //Check Return Status Code
+                if(raHttpResponse.statusCode() == 200)
+                {
+                    //Create Json Object of Returned Json
+                    JsonNode jnOAuthToken = joMapper.readTree(raHttpResponse.body());
+
+                    //Check for Required Fields
+                    if(jnOAuthToken.hasNonNull("access_token") && jnOAuthToken.hasNonNull("expires_in"))
+                    {
+                        //Load OAuth Access Token
+                        _OAuth_Token = jnOAuthToken.get("access_token").asText();
+
+                        //Update Expires In Value
+                        Expires_In = LocalDateTime.now().plusSeconds(Long.parseLong(jnOAuthToken.get("expires_in").asText()));
+                    }
+                    else
+                    {
+                        bTokenStatus = false;
+                    }
+                    
+                }
+                else
+                {
+                    bTokenStatus = false;
+                }
+
+            }
+            catch (Exception e) {
+                bTokenStatus = false;
+            }
+
+
+        }//End of Expires In Check
 
         return bTokenStatus;
     }

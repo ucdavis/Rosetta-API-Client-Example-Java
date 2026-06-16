@@ -12,40 +12,40 @@ public class Main {
             switch(args[0].toString().trim().toLowerCase())
             {
                 case "people-login":
-                    System.out.println("Looking something up by login");
+                    PeopleSearching(RosettaAPIWorker.PeopleSearchBy.loginid,args[1]);
                     break;
                 case "people-iam":
-                    System.out.println("Looking something up by IAM ID");
+                    PeopleSearching(RosettaAPIWorker.PeopleSearchBy.iamid,args[1]);
                     break;
                 case "people-employee":
-                    System.out.println("Looking something up by Employee ID");
+                    PeopleSearching(RosettaAPIWorker.PeopleSearchBy.employeeid,args[1]);
                     break;
                 case "people-student":
-                    System.out.println("Looking something up by Student ID");
+                    PeopleSearching(RosettaAPIWorker.PeopleSearchBy.studentid,args[1]);
                     break;
                 case "people-department":
-                    System.out.println("Looking something up by Department Code");
+                    PeopleSearching(RosettaAPIWorker.PeopleSearchBy.department,args[1]);
                     break;
                 case "employee-iam":
-                    System.out.println("employee lookup by IAM ID");
+                    EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy.iamid,args[1]);
                     break;
                 case "employee-department":
-                    System.out.println("employee lookup by Department Code");
+                    EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy.departmentid,args[1]);
                     break;
                 case "employee-division":
-                    System.out.println("employee lookup by Division");
+                    EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy.divisionid,args[1]);
                     break;
                 case "employee-organization":
-                    System.out.println("employee lookup by Organization");
+                    EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy.organizationid,args[1]);
                     break;
                 case "employee-subdivision":
-                    System.out.println("employee lookup by Sub Division");
+                    EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy.subdivisionid,args[1]);
                     break;
                 case "employee-subdivisionl4":
-                    System.out.println("employee lookup by Sub Division L4");
+                    EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy.subdivisionl4id,args[1]);
                     break;
                 case "departments":
-                    System.out.println("show departments");
+                    ShowDepartments();
                     break;
                 default:
                     ShowArgumentOptions();
@@ -60,6 +60,41 @@ public class Main {
 
     }
 
+    //###############################
+    // People Searching
+    //###############################
+
+    static void PeopleSearching(RosettaAPIWorker.PeopleSearchBy peopleSearchBy,String searchTerm)
+    {
+        //Initiate Rosetta API Worker
+        RosettaAPIWorker rosettaAPIWorker = new RosettaAPIWorker();
+
+        System.out.println(rosettaAPIWorker.CheckOAuthToken());
+
+        
+
+    }
+
+    //###############################
+    // Employee-Associations
+    //###############################
+
+    static void EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy employeeSearchBy,String searchTerm)
+    {
+        
+    }
+
+    //###############################
+    // Show Rosetta Departments
+    //###############################
+    static void ShowDepartments()
+    {
+        
+    }
+
+    //###############################
+    // Display Agrument Options
+    //###############################
     static void ShowArgumentOptions()
     {
         System.out.println(" ");
