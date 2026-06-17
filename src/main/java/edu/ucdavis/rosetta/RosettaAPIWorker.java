@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -130,7 +132,128 @@ public class RosettaAPIWorker {
         return bTokenStatus;
     }
 
+    public RosettaPerson ParseRosettaPersonJson(JsonNode jePeople)
+    {
+        //Initialize Person to Return
+        RosettaPerson rosettaPerson = new RosettaPerson();
 
+        //Retrieve Display Name
+        if(jePeople.hasNonNull("displayname"))
+        {
+            rosettaPerson.DisplayName = jePeople.get("displayname").asText();
+        }
+
+        //Retrieve IAM ID
+        if(jePeople.hasNonNull("iam_id"))
+        {
+            rosettaPerson.IAM_ID = jePeople.get("iam_id").asText();
+        }
+
+        return rosettaPerson;
+    }
+
+    public List<RosettaPerson> GetPeopleBySearchTerm(PeopleSearchBy searchBy, String searchTerm)
+    {
+        //Var for Return List
+        List<RosettaPerson> lRosettaPeople = new ArrayList<>();
+
+        //Initiate Object Mapper to Parse Returned Json
+        ObjectMapper joMapper = new ObjectMapper();
+
+        //Var for Search Result Limit
+        int nSrchRsltLimit = 100;
+
+        //Var for Search Result Offset
+        int nSrchRsltOffset = 0;
+
+        //Var for Retrieve More Search Results
+        boolean bRetrMoreSrchRslts = true;
+
+        do
+        {
+            //Check OAuth Token
+            if(CheckOAuthToken() == true)
+            {
+                //HttpClient for API Call to Rosetta API
+                try(HttpClient raHttpClient  = HttpClient.newHttpClient())
+                {
+                    //Var for Accounts URL
+                    String peopleURL =  Base_Url + "people?"+ searchBy.toString() + "=" + searchTerm + "&offset=" + Integer.toString(nSrchRsltOffset) + "&limit=" + Integer.toString(nSrchRsltLimit) + "&count=true";
+
+                    //Build Request for Accounts Lookup
+                    HttpRequest peopleHttpRequest = HttpRequest.newBuilder()
+                            .uri(URI.create(peopleURL))
+                            .header("Authorization","Bearer " + _OAuth_Token)
+                            .GET()
+                            .build();
+
+                    //Send Accounts Request 
+                    HttpResponse<String> peopleHttpResponse = raHttpClient.send(peopleHttpRequest, HttpResponse.BodyHandlers.ofString());
+
+                    //Check Return Status Code
+                    if(peopleHttpResponse.statusCode() == 200)
+                    {
+
+                        //Pull X-Total-Count and X-Response-Count Values
+                        if(peopleHttpResponse.headers().firstValue("x-total-count").isPresent() &&
+                           peopleHttpResponse.headers().firstValue("x-response-count").isPresent())
+                        {
+                            //Determine Header Values Counts
+                            int nTotalCnt = peopleHttpResponse.headers().firstValue("x-total-count").map(Integer::parseInt).orElse(0);
+                            int nRspnCnt = peopleHttpResponse.headers().firstValue("x-response-count").map(Integer::parseInt).orElse(0);
+
+                            //Check Total and Reponse Counts are Not Empty
+                            if(nTotalCnt > 0 && nRspnCnt > 0)
+                            {
+                                //Create Json Object of Accounts Json Data
+                                JsonNode jnPeopleData = joMapper.readTree(peopleHttpResponse.body());
+
+                                //Loop Through Accounts Information
+                                for(JsonNode jnPerson : jnPeopleData)
+                                {
+                                    //Add Rosetta Person to Returned People List
+                                    lRosettaPeople.add(ParseRosettaPersonJson(jnPerson));
+                                }
+
+                                //Increment Offset
+                                nSrchRsltOffset += nSrchRsltLimit;
+
+                                //Check Offset to Total Count
+                                if(nSrchRsltOffset >= nTotalCnt)
+                                {
+                                    bRetrMoreSrchRslts = false;
+                                }
+
+
+                            }
+                            else
+                            {
+                                bRetrMoreSrchRslts = false;
+                            }//End of nTotalCnt and nRspnCnt Empty Checks
+                            
+                        }
+                        else
+                        {
+                            bRetrMoreSrchRslts = false;
+                        }//End of Return Header Counts Checks
+                        
+                    }
+                    else
+                    {
+                        bRetrMoreSrchRslts = false;
+                    }//End of Status Code Check
+
+                }
+                catch (Exception e) {
+                    bRetrMoreSrchRslts = false;
+                }//End of HttpClient
+
+            }//End of CheckOAuthToken
+        }
+        while(bRetrMoreSrchRslts == true);
+
+        return lRosettaPeople;
+    }
 
     
 

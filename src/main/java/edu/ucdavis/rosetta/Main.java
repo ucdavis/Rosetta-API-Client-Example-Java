@@ -1,5 +1,7 @@
 package edu.ucdavis.rosetta;
 
+import java.util.List;
+import java.lang.reflect.Field;
 
 public class Main {
     public static void main(String[] args) {
@@ -67,11 +69,43 @@ public class Main {
     static void PeopleSearching(RosettaAPIWorker.PeopleSearchBy peopleSearchBy,String searchTerm)
     {
         //Initiate Rosetta API Worker
-        RosettaAPIWorker rosettaAPIWorker = new RosettaAPIWorker();
+        RosettaAPIWorker rosettaAPIWrkr = new RosettaAPIWorker();
 
-        System.out.println(rosettaAPIWorker.CheckOAuthToken());
+        //Query People by Search Parameters
+        List<RosettaPerson> lRosettaPeople = rosettaAPIWrkr.GetPeopleBySearchTerm(peopleSearchBy,searchTerm.trim());
 
-        
+        //Loop Through Returned UCD Peeps
+        for (RosettaPerson rosettaPrsn : lRosettaPeople) 
+        {
+            //For Readability
+            System.out.println(" ");
+            System.out.println("=========== " + rosettaPrsn.DisplayName + " =============");
+            System.out.println(" ");
+
+            //Pull Rosetta Person Class
+            Class<?> clazz = rosettaPrsn.getClass();
+
+            //Loop Through Fields and Display Values
+            for (Field field : clazz.getDeclaredFields()) 
+            {
+
+                //Set Accessability
+                field.setAccessible(true);
+
+                try
+                {
+                    System.out.println(field.getName() + " = " + field.get(rosettaPrsn));
+                }
+                catch(IllegalAccessException e)
+                {
+                    System.out.println("error occured");
+                }
+            
+            }
+
+            System.out.println(" ");
+            
+        }
 
     }
 
@@ -87,6 +121,7 @@ public class Main {
     //###############################
     // Show Rosetta Departments
     //###############################
+    
     static void ShowDepartments()
     {
         
