@@ -132,6 +132,208 @@ public class RosettaAPIWorker {
         return bTokenStatus;
     }
 
+    public RosettaEmployeeAssociation ParseRosettaEmployeeAssocJson(JsonNode jeEmploymentAssoc)
+    {
+        //Initialize Employee Association to Return
+        RosettaEmployeeAssociation rosettaEmplAssoc = new RosettaEmployeeAssociation();
+
+        //Retrieve IAM ID
+        if(jeEmploymentAssoc.hasNonNull("iam_id"))
+        {
+            rosettaEmplAssoc.IAM_ID = jeEmploymentAssoc.get("iam_id").asText();
+        }
+
+        //Retrieve Employee Record
+        if(jeEmploymentAssoc.hasNonNull("employee_record"))
+        {
+            rosettaEmplAssoc.Employee_Record = jeEmploymentAssoc.get("employee_record").asText();
+        }
+
+        //Retrieve Employee ID
+        if(jeEmploymentAssoc.hasNonNull("employee_id"))
+        {
+            rosettaEmplAssoc.Employee_ID = jeEmploymentAssoc.get("employee_id").asText();
+        }
+
+        //Retrieve Position Number
+        if(jeEmploymentAssoc.hasNonNull("position_number"))
+        {
+            rosettaEmplAssoc.Position_Number = jeEmploymentAssoc.get("position_number").asText();
+        }
+
+        //Retrieve Position Title
+        if(jeEmploymentAssoc.hasNonNull("position_title"))
+        {
+            rosettaEmplAssoc.Position_Title = jeEmploymentAssoc.get("position_title").asText();
+        }
+
+        //Retrieve Relationship to Organization
+        if(jeEmploymentAssoc.hasNonNull("relationship_to_organization"))
+        {
+            rosettaEmplAssoc.Relationship_To_Organization = jeEmploymentAssoc.get("relationship_to_organization").asText();
+        }
+
+        //Retrieve Employee Classification
+        if(jeEmploymentAssoc.hasNonNull("employee_classification"))
+        {
+            rosettaEmplAssoc.Employee_Classification = jeEmploymentAssoc.get("employee_classification").asText();
+        }
+
+        //Retrieve Employee Classification Description
+        if(jeEmploymentAssoc.hasNonNull("employee_classification_description"))
+        {
+            rosettaEmplAssoc.Employee_Classification_Description = jeEmploymentAssoc.get("employee_classification_description").asText();
+        }
+
+        //Retrieve Status
+        if(jeEmploymentAssoc.hasNonNull("status"))
+        {
+            rosettaEmplAssoc.Status = jeEmploymentAssoc.get("status").asText();
+        }
+
+        //Retrieve Hire Date
+        if(jeEmploymentAssoc.hasNonNull("hire_date"))
+        {
+            rosettaEmplAssoc.Hire_Date = jeEmploymentAssoc.get("hire_date").asText();
+        }
+
+        //Retrieve Start Date
+        if(jeEmploymentAssoc.hasNonNull("start_date"))
+        {
+            rosettaEmplAssoc.Start_Date = jeEmploymentAssoc.get("start_date").asText();
+        }
+
+        //Retrieve FTE Percentage
+        if(jeEmploymentAssoc.hasNonNull("fte_percentage"))
+        {
+            rosettaEmplAssoc.FTE_Percentage = jeEmploymentAssoc.get("fte_percentage").asText();
+        }
+
+        //Retrieve Joy Type ID
+        if(jeEmploymentAssoc.hasNonNull("job_type_id"))
+        {
+            rosettaEmplAssoc.Job_Type_ID = jeEmploymentAssoc.get("job_type_id").asText();
+        }
+
+        //Retrieve Job Type Description
+        if(jeEmploymentAssoc.hasNonNull("job_type_description"))
+        {
+            rosettaEmplAssoc.Job_Type_Description = jeEmploymentAssoc.get("job_type_description").asText();
+        }
+
+        //Retrieve Organization ID
+        if(jeEmploymentAssoc.hasNonNull("organization_id"))
+        {
+            rosettaEmplAssoc.Organization_ID = jeEmploymentAssoc.get("organization_id").asText();
+        }
+
+        //Retrieve Organization Title
+        if(jeEmploymentAssoc.hasNonNull("organization_title"))
+        {
+            rosettaEmplAssoc.Organization_Title = jeEmploymentAssoc.get("organization_title").asText();
+        }
+
+        //Retrieve Division ID
+        if(jeEmploymentAssoc.hasNonNull("division_id"))
+        {
+            rosettaEmplAssoc.Division_ID = jeEmploymentAssoc.get("division_id").asText();
+        }
+
+        //Retrieve Division Title
+        if(jeEmploymentAssoc.hasNonNull("division_title"))
+        {
+            rosettaEmplAssoc.Division_Title = jeEmploymentAssoc.get("division_title").asText();
+        }
+
+
+        //Retrieve Subdivision ID
+        if(jeEmploymentAssoc.hasNonNull("subdivision_id"))
+        {
+            rosettaEmplAssoc.Subdivision_ID = jeEmploymentAssoc.get("subdivision_id").asText();
+        }
+
+        //Retrieve Subdivision Title
+        if(jeEmploymentAssoc.hasNonNull("subdivision_title"))
+        {
+            rosettaEmplAssoc.Subdivision_Title = jeEmploymentAssoc.get("subdivision_title").asText();
+        }
+
+        //Retrieve Subdivision L4 ID
+        if(jeEmploymentAssoc.hasNonNull("subdivision_l4_id"))
+        {
+            rosettaEmplAssoc.Subdivision_L4_ID = jeEmploymentAssoc.get("subdivision_l4_id").asText();
+        }
+
+        //Retrieve Subdivision L4 Title
+        if(jeEmploymentAssoc.hasNonNull("subdivision_l4_title"))
+        {
+            rosettaEmplAssoc.Subdivision_L4_Title = jeEmploymentAssoc.get("subdivision_l4_title").asText();
+        }
+
+        //Retrieve Business Unit ID
+        if(jeEmploymentAssoc.hasNonNull("business_unit_id"))
+        {
+            rosettaEmplAssoc.Business_Unit_ID = jeEmploymentAssoc.get("business_unit_id").asText();
+        }
+
+        //Retrieve Business Unit Title
+        if(jeEmploymentAssoc.hasNonNull("business_unit_title"))
+        {
+            rosettaEmplAssoc.Business_Unit_Title = jeEmploymentAssoc.get("business_unit_title").asText();
+        }
+
+        //Retrieve Department ID
+        if(jeEmploymentAssoc.hasNonNull("department_id"))
+        {
+            rosettaEmplAssoc.Department_ID = jeEmploymentAssoc.get("department_id").asText();
+        }
+
+        //Retrieve Department Title
+        if(jeEmploymentAssoc.hasNonNull("department_title"))
+        {
+            rosettaEmplAssoc.Department_Title = jeEmploymentAssoc.get("department_title").asText();
+        }
+
+        //Retrieve Department Short Title
+        if(jeEmploymentAssoc.hasNonNull("department_short_title"))
+        {
+            rosettaEmplAssoc.Department_Short_Title = jeEmploymentAssoc.get("department_short_title").asText();
+        }
+
+        //Retrieve Reports to Position
+        if(jeEmploymentAssoc.hasNonNull("reports_to_position"))
+        {
+            rosettaEmplAssoc.Reports_To_Position = jeEmploymentAssoc.get("reports_to_position").asText();
+        }
+
+        //Retrieve Reports To IAM ID
+        if(jeEmploymentAssoc.hasNonNull("reports_to_iam_id"))
+        {
+            rosettaEmplAssoc.Reports_To_IAM_ID = jeEmploymentAssoc.get("reports_to_iam_id").asText();
+        }
+
+        //Retrieve Reports to Employee ID
+        if(jeEmploymentAssoc.hasNonNull("reports_to_employee_id"))
+        {
+            rosettaEmplAssoc.Reports_To_Employee_ID = jeEmploymentAssoc.get("reports_to_employee_id").asText();
+        }
+
+        //Retrieve Is Health Position
+        if(jeEmploymentAssoc.hasNonNull("is_health_position"))
+        {
+            rosettaEmplAssoc.Is_Health_Position = jeEmploymentAssoc.get("is_health_position").asText();
+        }
+
+        //Retrieve Is Campus Position
+        if(jeEmploymentAssoc.hasNonNull("is_campus_position"))
+        {
+            rosettaEmplAssoc.Is_Campus_Position = jeEmploymentAssoc.get("is_campus_position").asText();
+        }
+
+
+        return rosettaEmplAssoc;
+    }
+
     public RosettaPerson ParseRosettaPersonJson(JsonNode jePeople)
     {
         //Initialize Person to Return
@@ -385,7 +587,28 @@ public class RosettaAPIWorker {
 
         }//End of Employment Statuses
 
-        
+        //Check for Employment Associations
+        if(jePeople.hasNonNull("employee_association") && jePeople.get("employee_association").isArray())
+        {
+            //Retrieve Employment Associations Node
+            JsonNode jeEmploymentAssociations = jePeople.get("employee_association");
+
+            //Loop Through Each Employment Association
+            for(JsonNode jeEmplAssociation : jeEmploymentAssociations)
+            {
+                rosettaPerson.lEmployeeAssociations.add(ParseRosettaEmployeeAssocJson(jeEmplAssociation));
+            }
+
+            //Update Employee Associations with IAM ID
+            if(rosettaPerson.IAM_ID.isEmpty() == false && rosettaPerson.lEmployeeAssociations.size() > 0)
+            {
+                for(RosettaEmployeeAssociation rea : rosettaPerson.lEmployeeAssociations)
+                {
+                    rea.IAM_ID = rosettaPerson.IAM_ID;
+                }
+            }
+
+        }//End of Employment Associations
 
         return rosettaPerson;
     }
