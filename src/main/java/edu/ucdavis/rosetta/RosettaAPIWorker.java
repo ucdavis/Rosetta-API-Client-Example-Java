@@ -149,6 +149,244 @@ public class RosettaAPIWorker {
             rosettaPerson.IAM_ID = jePeople.get("iam_id").asText();
         }
 
+        //Retrieve IDs
+        if(jePeople.hasNonNull("id"))
+        {
+
+            //Pull ID Node
+            JsonNode jeIDs = jePeople.get("id");
+
+            //Retrieve IAM ID
+            if(jeIDs.hasNonNull("iam_id"))
+            {
+                rosettaPerson.IAM_ID = jeIDs.get("iam_id").asText();
+            }
+
+            //Retrieve Login ID
+            if(jeIDs.hasNonNull("login_id"))
+            {
+                rosettaPerson.Login_ID = jeIDs.get("login_id").asText();
+            }
+
+            //Retrieve Mothra ID
+            if(jeIDs.hasNonNull("mothra_id"))
+            {
+                rosettaPerson.Mothra_ID = jeIDs.get("mothra_id").asText();
+            }
+
+            //Retrieve Employee ID
+            if(jeIDs.hasNonNull("employee_id"))
+            {
+                rosettaPerson.Employee_ID = jeIDs.get("employee_id").asText();
+            }
+
+            //Retrieve Mail IDs
+            if(jeIDs.hasNonNull("mail_id"))
+            {
+                //Pull Mail ID Node
+                JsonNode jeIDsMail = jeIDs.get("mail_id");
+
+                //Check for Campus Mail ID
+                if(jeIDsMail.hasNonNull("campus"))
+                {
+                    rosettaPerson.Mail_ID_Campus = jeIDsMail.get("campus").asText();
+                }
+
+                //Check for Health Mail ID
+                if(jeIDsMail.hasNonNull("health"))
+                {
+                    rosettaPerson.Mail_ID_Health = jeIDsMail.get("health").asText();
+                }
+
+            }
+
+        }//End of IDs
+
+        //Retrieve Names
+        if(jePeople.hasNonNull("name"))
+        {
+            //Retrieve Name Node
+            JsonNode jeNames = jePeople.get("name");
+
+            //Check for Lived First Name
+            if(jeNames.hasNonNull("lived_first_name"))
+            {
+                rosettaPerson.Lived_First_Name = jeNames.get("lived_first_name").asText();
+            }
+
+            //Check for Lived Last Name
+            if(jeNames.hasNonNull("lived_last_name"))
+            {
+                rosettaPerson.Lived_Last_Name = jeNames.get("lived_last_name").asText();
+            }
+
+        }//End of Names Checks
+
+        //Retrieve Email Addresses
+        if(jePeople.hasNonNull("email"))
+        {
+            //Retrieve Email Node
+            JsonNode jeEmailAddress = jePeople.get("email");
+
+            //Check for Campus Email Address
+            if(jeEmailAddress.hasNonNull("campus"))
+            {
+                rosettaPerson.Email_Address_Campus = jeEmailAddress.get("campus").asText();
+            }
+
+            //Check for Health Email Address
+            if(jeEmailAddress.hasNonNull("health"))
+            {
+                rosettaPerson.Email_Address_Health = jeEmailAddress.get("health").asText();
+            }
+
+        }//End of Email Addresses
+
+        //Retrieve Provisioning Statuses
+        if(jePeople.hasNonNull("provisioning_status"))
+        {
+            //Retrieve Provisioning Statuses 
+            JsonNode jeProvisioningStatus = jePeople.get("provisioning_status");
+
+            //Retrieve Primary Provisioning Status
+            if(jeProvisioningStatus.hasNonNull("primary"))
+            {
+                rosettaPerson.Provisioning_Status_Primary = jeProvisioningStatus.get("primary").asText();
+            }
+
+            //Retrieve Employee Provisioning Status
+            if(jeProvisioningStatus.hasNonNull("employee"))
+            {
+                rosettaPerson.Provisioning_Status_Employee = jeProvisioningStatus.get("employee").asText();
+            }
+
+            //Retrieve Faculty Provisioning Status
+            if(jeProvisioningStatus.hasNonNull("faculty"))
+            {
+                rosettaPerson.Provisioning_Status_Faculty = jeProvisioningStatus.get("faculty").asText();
+            }
+
+            //Retrieve Student Provisioning Status
+            if(jeProvisioningStatus.hasNonNull("student"))
+            {
+                rosettaPerson.Provisioning_Status_Student = jeProvisioningStatus.get("student").asText();
+            }
+
+
+        }//End of Provisioning Status
+
+        //Retrieve Affiliation
+        if(jePeople.hasNonNull("affiliation") && jePeople.get("affiliation").isArray())
+        {
+
+            //Retreive Affiliations
+            JsonNode jeAffiliation = jePeople.get("affiliation");
+
+            //Loop Through Each Affiliation
+            for(JsonNode jeAffil : jeAffiliation)
+            {
+
+                switch(jeAffil.asText())
+                {
+
+                    case "employee":
+                        rosettaPerson.Affiliation_Employee = true;
+                        break;
+                    
+                    case "faculty":
+                        rosettaPerson.Affiliation_Faculty = true;
+                        break;
+                    
+                    case "temporary_affiliate":
+                        rosettaPerson.Affiliation_Temporary_Affiliate = true;
+                        break;
+
+                    case "student":
+                        rosettaPerson.Affiliation_Student = true;
+                        break;
+
+                    case "student_applicant":
+                        rosettaPerson.Affiliation_Student_Applicant = true;
+                        break;
+
+                    case "health_affiliate":
+                        rosettaPerson.Affiliation_Health_Affiliate = true;
+                        break;
+
+                }//End of jeAffil Switch Statement
+
+            }//End of Affiliation Enumerate Array
+        
+        }//End of Affiliations 
+
+        //Retrieve Employment Status
+        if(jePeople.hasNonNull("employment_status") && jePeople.get("employment_status").isArray())
+        {
+            //Retrieve Employment Statuses
+            JsonNode jeEmploymentStatus = jePeople.get("employment_status");
+
+            //Loop Through Each Employment Status
+            for(JsonNode jeEmplStatus : jeEmploymentStatus)
+            {
+                switch(jeEmplStatus.asText())
+                {
+
+                    case "is_academic":
+                        rosettaPerson.Employment_Is_Academic = true;
+                        break;
+                    
+                    case "is_academic_senate":
+                        rosettaPerson.Employment_Is_Academic_Senate = true;
+                        break;
+                    
+                    case "is_academic_federation":
+                        rosettaPerson.Employment_Is_Academic_Federation = true;
+                        break;
+
+                    case "is_faculty":
+                        rosettaPerson.Employment_Is_Faculty = true;
+                        break;
+
+                    case "is_teaching_faculty":
+                        rosettaPerson.Employment_Is_Teaching_Faculty = true;
+                        break;
+
+                    case "is_ladder_rank":
+                        rosettaPerson.Employment_Is_Ladder_Rank = true;
+                        break;
+
+                    case "is_without_salary":
+                        rosettaPerson.Employment_Is_Without_Salary = true;
+                        break;
+
+                    case "is_msp":
+                        rosettaPerson.Employment_Is_MSP = true;
+                        break;
+
+                    case "is_ssp":
+                        rosettaPerson.Employment_Is_SSP = true;
+                        break;
+
+                    case "is_manager":
+                        rosettaPerson.Employment_Is_Manager = true;
+                        break;
+
+                    case "is_campus_employee":
+                        rosettaPerson.Employment_Is_Campus_Employee = true;
+                        break;
+
+                    case "is_health_employee":
+                        rosettaPerson.Employment_Is_Health_Employee = true;
+                        break;
+
+                }//End of jeEmplStatus Switch Statement
+
+            }//End of Employment Status Enumerate Array
+
+        }//End of Employment Statuses
+
+        
+
         return rosettaPerson;
     }
 
