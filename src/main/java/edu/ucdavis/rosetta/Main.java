@@ -94,7 +94,11 @@ public class Main {
 
                 try
                 {
-                    System.out.println(field.getName() + " = " + field.get(rosettaPrsn));
+                    if(field.getName() != "lEmployeeAssociations" && field.getName() != "lStudentAssociations")
+                    {
+                        System.out.println(field.getName() + " = " + field.get(rosettaPrsn));
+                    }
+                    
                 }
                 catch(IllegalAccessException e)
                 {
@@ -103,9 +107,81 @@ public class Main {
             
             }
 
+            //For Readability
             System.out.println(" ");
+
+            //Loop Through Employee Associations
+            if(rosettaPrsn.lEmployeeAssociations.size() > 0)
+            {
+                System.out.println("Employee Associations:");    
+                System.out.println(" ");
+
+                for(RosettaEmployeeAssociation rea: rosettaPrsn.lEmployeeAssociations)
+                {
+                    //Pull Rosetta Employee Association Class
+                    Class<?> classemp = rea.getClass();
+
+                    //Loop Through Fields and Display Values
+                    for (Field field : classemp.getDeclaredFields())
+                    {
+                        //Set Accessability
+                        field.setAccessible(true);
+
+                        try
+                        {
+                            System.out.println(field.getName() + " = " + field.get(rea));
+                        }
+                        catch(IllegalAccessException e)
+                        {
+                            System.out.println("error occured");
+                        }
+                    }
+
+                    //For Readability
+                    System.out.println(" ");
+                }
+            }
+
+             //For Readability
+            System.out.println(" ");
+
+            //Loop Through Student Associations
+            if(rosettaPrsn.lStudentAssociations.size() > 0)
+            {
+
+                System.out.println("Student Associations:");    
+                System.out.println(" ");
+
+                for(RosettaStudentAssociationShort rsas: rosettaPrsn.lStudentAssociations)
+                {
+                    //Pull Rosetta Student Association Class
+                    Class<?> classstd = rsas.getClass();
+
+                    //Loop Through Fields and Display Values
+                    for (Field field : classstd.getDeclaredFields())
+                    {
+                        //Set Accessability
+                        field.setAccessible(true);
+
+                        try
+                        {
+                            System.out.println(field.getName() + " = " + field.get(rsas));
+                        }
+                        catch(IllegalAccessException e)
+                        {
+                            System.out.println("error occured");
+                        }
+                    }
+
+                    //For Readability
+                    System.out.println(" ");
+
+                }//End of Student Associations Foreach
+
+            }//End of Student Associations Size Check
+
             
-        }
+        }//End lRosettaPeople For Loop
 
     }
 

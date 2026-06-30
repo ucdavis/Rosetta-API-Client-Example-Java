@@ -132,6 +132,118 @@ public class RosettaAPIWorker {
         return bTokenStatus;
     }
 
+    public RosettaStudentAssociationShort ParseRosettaStudentAssocShortJson(JsonNode jeStudentAssocShrt)
+    {
+        //Initialize Student Association to Return
+        RosettaStudentAssociationShort rosettaStudentAssoc = new RosettaStudentAssociationShort();
+
+        //Retrieve College Code
+        if(jeStudentAssocShrt.hasNonNull("college_code"))
+        {
+            rosettaStudentAssoc.College_Code = jeStudentAssocShrt.get("college_code").asText();
+        }
+
+        //Retrieve College Title 
+        if(jeStudentAssocShrt.hasNonNull("college_title"))
+        {
+            rosettaStudentAssoc.College_Title = jeStudentAssocShrt.get("college_title").asText();
+        }
+
+        //Retrieve Major Code
+        if(jeStudentAssocShrt.hasNonNull("major_code"))
+        {
+            rosettaStudentAssoc.Major_Code = jeStudentAssocShrt.get("major_code").asText();
+        }
+
+        //Retrieve Major Title
+        if(jeStudentAssocShrt.hasNonNull("major_title"))
+        {
+            rosettaStudentAssoc.Major_Title = jeStudentAssocShrt.get("major_title").asText();
+        }
+
+        //Retrieve Academic Level
+        if(jeStudentAssocShrt.hasNonNull("academic_level"))
+        {
+            rosettaStudentAssoc.Academic_Level = jeStudentAssocShrt.get("academic_level").asText();
+        }
+
+        //Retrieve Class Level
+        if(jeStudentAssocShrt.hasNonNull("class_level"))
+        {
+            rosettaStudentAssoc.Class_Level = jeStudentAssocShrt.get("class_level").asText();
+        }
+
+        return rosettaStudentAssoc;
+    }
+
+    public RosettaStudentAssociation ParseRosettaStudentAssocJson(JsonNode jeStudentAssoc)
+    {
+        //Initialize Student Association to Return
+        RosettaStudentAssociation rosettaStudentAssoc = new RosettaStudentAssociation();
+
+        //Retrieve IAM ID
+        if(jeStudentAssoc.hasNonNull("iam_id"))
+        {
+            rosettaStudentAssoc.IAM_ID = jeStudentAssoc.get("iam_id").asText();
+        }
+
+        //Retrieve Student ID
+        if(jeStudentAssoc.hasNonNull("student_id"))
+        {
+            rosettaStudentAssoc.Student_ID = jeStudentAssoc.get("student_id").asText();
+        }
+
+        //Retrieve PIDM
+        if(jeStudentAssoc.hasNonNull("pidm"))
+        {
+            rosettaStudentAssoc.PIDM = jeStudentAssoc.get("pidm").asText();
+        }
+
+        //Retrieve College Code
+        if(jeStudentAssoc.hasNonNull("college_code"))
+        {
+            rosettaStudentAssoc.College_Code = jeStudentAssoc.get("college_code").asText();
+        }
+
+        //Retrieve College Title 
+        if(jeStudentAssoc.hasNonNull("college_title"))
+        {
+            rosettaStudentAssoc.College_Title = jeStudentAssoc.get("college_title").asText();
+        }
+
+        //Retrieve Major Code
+        if(jeStudentAssoc.hasNonNull("major_code"))
+        {
+            rosettaStudentAssoc.Major_Code = jeStudentAssoc.get("major_code").asText();
+        }
+
+        //Retrieve Major Title
+        if(jeStudentAssoc.hasNonNull("major_title"))
+        {
+            rosettaStudentAssoc.Major_Title = jeStudentAssoc.get("major_title").asText();
+        }
+
+        //Retrieve Level Affiliation Code
+        if(jeStudentAssoc.hasNonNull("lvl_affiliation_code"))
+        {
+            rosettaStudentAssoc.Level_Affiliation_Code = jeStudentAssoc.get("lvl_affiliation_code").asText();
+        }
+
+        //Retrieve Class Affiliation Code
+        if(jeStudentAssoc.hasNonNull("cls_affiliation_code"))
+        {
+            rosettaStudentAssoc.Class_Affiliation_Code = jeStudentAssoc.get("cls_affiliation_code").asText();
+        }
+
+        //Retrieve Rank
+        if(jeStudentAssoc.hasNonNull("rank"))
+        {
+            rosettaStudentAssoc.IAM_ID = jeStudentAssoc.get("rank").asText();
+        }
+
+        return rosettaStudentAssoc;
+    }
+
     public RosettaEmployeeAssociation ParseRosettaEmployeeAssocJson(JsonNode jeEmploymentAssoc)
     {
         //Initialize Employee Association to Return
@@ -609,6 +721,19 @@ public class RosettaAPIWorker {
             }
 
         }//End of Employment Associations
+
+        //Check for Student Associations
+        if(jePeople.hasNonNull("student_association") && jePeople.get("student_association").isArray())
+        {
+            //Retrieve Student Associations Node
+            JsonNode jeStudentAssociations = jePeople.get("student_association");
+
+            for(JsonNode jeStdtAssociation : jeStudentAssociations)
+            {
+                rosettaPerson.lStudentAssociations.add(ParseRosettaStudentAssocShortJson(jeStdtAssociation));
+            }
+
+        }//End of Student Associations
 
         return rosettaPerson;
     }
