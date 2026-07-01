@@ -841,7 +841,109 @@ public class RosettaAPIWorker {
         return lRosettaPeople;
     }
 
-    
+    public List<RosettaEmployeeAssociation> GetEmployeeAssociationsBySearchTerm(EmployeeSearchBy searchBy, String searchTerm)
+    {
+        //Var for List to Return
+        List<RosettaEmployeeAssociation> lEmployeeAssociations = new ArrayList<>();
+
+        //Initiate Object Mapper to Parse Returned Json
+        ObjectMapper joMapper = new ObjectMapper();
+
+        //Var for Search Result Limit
+        int nSrchRsltLimit = 200;
+
+        //Var for Search Result Offset
+        int nSrchRsltOffset = 0;
+
+        //Var for Retrieve More Search Results
+        boolean bRetrMoreSrchRslts = true;
+
+        do
+        {
+            //Check OAuth Token
+            if(CheckOAuthToken() == true)
+            {
+
+                //HttpClient for API Call to Rosetta API
+                try(HttpClient raHttpClient  = HttpClient.newHttpClient())
+                {
+                    //Var for Employee Associations URL
+                    String employeeURL =  Base_Url + "employee-association?"+ searchBy.toString() + "=" + searchTerm + "&offset=" + Integer.toString(nSrchRsltOffset) + "&limit=" + Integer.toString(nSrchRsltLimit) + "&count=true";
+
+                    //Build Request for Accounts Lookup
+                    HttpRequest employeeHttpRequest = HttpRequest.newBuilder()
+                            .uri(URI.create(employeeURL))
+                            .header("Authorization","Bearer " + _OAuth_Token)
+                            .GET()
+                            .build();
+
+                    //Send Employee Associations Request 
+                    HttpResponse<String> employeeHttpResponse = raHttpClient.send(employeeHttpRequest, HttpResponse.BodyHandlers.ofString());
+
+                    //Check Return Status Code
+                    if(employeeHttpResponse.statusCode() == 200)
+                    {
+
+                        //Pull X-Total-Count and X-Response-Count Values
+                        if(employeeHttpResponse.headers().firstValue("x-total-count").isPresent() &&
+                           employeeHttpResponse.headers().firstValue("x-response-count").isPresent())
+                        {
+                            //Determine Header Values Counts
+                            int nTotalCnt = employeeHttpResponse.headers().firstValue("x-total-count").map(Integer::parseInt).orElse(0);
+                            int nRspnCnt = employeeHttpResponse.headers().firstValue("x-response-count").map(Integer::parseInt).orElse(0);
+
+                            //Check Total and Reponse Counts are Not Empty
+                            if(nTotalCnt > 0 && nRspnCnt > 0)
+                            {
+                                //Create Json Object of Employee Associations Json Data
+                                JsonNode jnEmployeeData = joMapper.readTree(employeeHttpResponse.body());
+
+                                //Loop Through Employee Association Information
+                                for(JsonNode jnEmployee : jnEmployeeData)
+                                {
+                                    //Add Rosetta Employee Association to Returned Employee List
+                                    lEmployeeAssociations.add(ParseRosettaEmployeeAssocJson(jnEmployee));
+                                }
+
+                                //Increment Offset
+                                nSrchRsltOffset += nSrchRsltLimit;
+
+                                //Check Offset to Total Count
+                                if(nSrchRsltOffset >= nTotalCnt)
+                                {
+                                    bRetrMoreSrchRslts = false;
+                                }
+
+
+                            }
+                            else
+                            {
+                                bRetrMoreSrchRslts = false;
+                            }//End of nTotalCnt and nRspnCnt Empty Checks
+                            
+                        }
+                        else
+                        {
+                            bRetrMoreSrchRslts = false;
+                        }//End of Return Header Counts Checks
+                        
+                    }
+                    else
+                    {
+                        bRetrMoreSrchRslts = false;
+                    }//End of Status Code Check
+
+                }
+                catch (Exception e) {
+                    bRetrMoreSrchRslts = false;
+                }//End of HttpClient
+
+            }//End of CheckOAuthToken
+        }
+        while(bRetrMoreSrchRslts == true);
+
+        return lEmployeeAssociations;
+    }
 
     public void ResourceStuffs()
     {

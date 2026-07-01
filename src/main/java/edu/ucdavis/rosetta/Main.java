@@ -3,8 +3,10 @@ package edu.ucdavis.rosetta;
 import java.util.List;
 import java.lang.reflect.Field;
 
-public class Main {
-    public static void main(String[] args) {
+public class Main 
+{
+    public static void main(String[] args) 
+    {
 
         //Submitted Argument Check
         if(args.length > 0 && args[0].isEmpty() == false)
@@ -191,7 +193,49 @@ public class Main {
 
     static void EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy employeeSearchBy,String searchTerm)
     {
-        
+
+        //Initiate Rosetta API Worker
+        RosettaAPIWorker rosettaAPIWrkr = new RosettaAPIWorker();
+
+        //Query Employee Associations by Search Parameters
+        List<RosettaEmployeeAssociation> lRosettaEmplAssocs = rosettaAPIWrkr.GetEmployeeAssociationsBySearchTerm(employeeSearchBy,searchTerm.trim());
+
+        //Loop Through Returned Rosetta Employee Associations
+        for(RosettaEmployeeAssociation rea : lRosettaEmplAssocs)
+        {
+            //For Readability
+            System.out.println(" ");
+            System.out.println("=========== " + rea.Employee_ID + " =============");
+            System.out.println(" ");
+
+            //Pull Rosetta Person Class
+            Class<?> clazz = rea.getClass();
+
+            //Loop Through Fields and Display Values
+            for (Field field : clazz.getDeclaredFields()) 
+            {
+
+                //Set Accessability
+                field.setAccessible(true);
+
+                try
+                {
+                    System.out.println(field.getName() + " = " + field.get(rea));
+                }
+                catch(IllegalAccessException e)
+                {
+                    System.out.println("error occured");
+                }
+            
+            }
+
+            //For Readability
+            System.out.println(" ");
+        }
+
+
+        System.out.println("Total Record Count: " + lRosettaEmplAssocs.size());
+
     }
 
     //###############################
