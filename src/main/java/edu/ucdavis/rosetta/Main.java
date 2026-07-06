@@ -13,7 +13,7 @@ public class Main
     {
 
         //Submitted Argument Check
-        if(args.length > 0 && args[0].isEmpty() == false)
+        if(args.length >= 2 && args[0].isEmpty() == false && args[1].isEmpty() == false)
         {
 
             //Determine Action to Take
@@ -163,9 +163,7 @@ public class Main
                 }
             }
 
-             //For Readability
-            System.out.println(" ");
-
+        
             //Loop Through Student Associations
             if(rosettaPrsn.lStudentAssociations.size() > 0)
             {
@@ -203,7 +201,11 @@ public class Main
 
             
         }//End lRosettaPeople For Loop
-
+        
+        System.out.println("==============================================");
+        System.out.println(" ");
+        System.out.println("Total Record Count: " + lRosettaPeople.size());
+        System.out.println(" ");
     }
 
     //##############################
