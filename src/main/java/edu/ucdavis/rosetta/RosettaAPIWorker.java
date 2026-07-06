@@ -24,6 +24,7 @@ public class RosettaAPIWorker {
     private String _OAuth_Token;
     private String _OAuth_Scopes;
     public String Test_ID;
+    public String Export_Location;
     public LocalDateTime Expires_In;
 
     public RosettaAPIWorker()
@@ -38,6 +39,7 @@ public class RosettaAPIWorker {
         Base_Url = dotenv.get("ROSETTA_BASE_URL");
         Token_Url = dotenv.get("ROSETTA_OAUTH_URL");
         Test_ID = dotenv.get("ROSETTA_TEST_ID");
+        Export_Location = dotenv.get("ROSETTA_EXPORT_LOCATION");
 
         //Configure Intitial Expires In Value
         Expires_In = LocalDateTime.now().minusHours(1);
@@ -130,6 +132,80 @@ public class RosettaAPIWorker {
         }//End of Expires In Check
 
         return bTokenStatus;
+    }
+
+    public RosettaDepartment ParseRosettaDepartmentJson(JsonNode jeDepartment)
+    {
+        //Initialize Department to Return
+        RosettaDepartment rosettaDepartment = new RosettaDepartment();
+
+        //Retrieve Department ID
+        if(jeDepartment.hasNonNull("department_id"))
+        {
+            rosettaDepartment.Department_ID = jeDepartment.get("department_id").asText();
+        }
+
+        //Retrieve Department Title
+        if(jeDepartment.hasNonNull("department_title"))
+        {
+            rosettaDepartment.Department_Title = jeDepartment.get("department_title").asText();
+        }
+
+        //Retrieve Department Short Tiele
+        if(jeDepartment.hasNonNull("department_short_title"))
+        {
+            rosettaDepartment.Department_Short_Title = jeDepartment.get("department_short_title").asText();
+        }
+
+        //Retrieve Subdivision ID
+        if(jeDepartment.hasNonNull("subdivision_id"))
+        {
+            rosettaDepartment.Subdivision_ID = jeDepartment.get("subdivision_id").asText();
+        }
+
+        //Retrieve Subdivision Title
+        if(jeDepartment.hasNonNull("subdivision_title"))
+        {
+            rosettaDepartment.Subdivision_Title = jeDepartment.get("subdivision_title").asText();
+        }
+
+        //Retrieve Subdivision L4 ID
+        if(jeDepartment.hasNonNull("subdivision_l4_id"))
+        {
+            rosettaDepartment.Subdivision_L4_ID = jeDepartment.get("subdivision_l4_id").asText();
+        }
+
+        //Retrieve Subdivision L4 Title
+        if(jeDepartment.hasNonNull("subdivision_l4_title"))
+        {
+            rosettaDepartment.Subdivision_L4_Title = jeDepartment.get("subdivision_l4_title").asText();
+        }
+
+        //Retrieve Division ID
+        if(jeDepartment.hasNonNull("division_id"))
+        {
+            rosettaDepartment.Division_ID = jeDepartment.get("division_id").asText();
+        }
+
+        //Retrieve Division Title
+        if(jeDepartment.hasNonNull("division_title"))
+        {
+            rosettaDepartment.Division_Title = jeDepartment.get("division_title").asText();
+        }
+
+        //Retrieve Organization ID
+        if(jeDepartment.hasNonNull("organization_id"))
+        {
+            rosettaDepartment.Organization_ID = jeDepartment.get("organization_id").asText();
+        }
+
+        //Retrieve Organization Title
+        if(jeDepartment.hasNonNull("organization_title"))
+        {
+            rosettaDepartment.Organization_Title = jeDepartment.get("organization_title").asText();
+        }
+
+        return rosettaDepartment;
     }
 
     public RosettaStudentAssociationShort ParseRosettaStudentAssocShortJson(JsonNode jeStudentAssocShrt)
@@ -766,7 +842,7 @@ public class RosettaAPIWorker {
                     //Var for Accounts URL
                     String peopleURL =  Base_Url + "people?"+ searchBy.toString() + "=" + searchTerm + "&offset=" + Integer.toString(nSrchRsltOffset) + "&limit=" + Integer.toString(nSrchRsltLimit) + "&count=true";
 
-                    //Build Request for Accounts Lookup
+                    //Build Request for People Lookup
                     HttpRequest peopleHttpRequest = HttpRequest.newBuilder()
                             .uri(URI.create(peopleURL))
                             .header("Authorization","Bearer " + _OAuth_Token)
@@ -870,7 +946,7 @@ public class RosettaAPIWorker {
                     //Var for Employee Associations URL
                     String employeeURL =  Base_Url + "employee-association?"+ searchBy.toString() + "=" + searchTerm + "&offset=" + Integer.toString(nSrchRsltOffset) + "&limit=" + Integer.toString(nSrchRsltLimit) + "&count=true";
 
-                    //Build Request for Accounts Lookup
+                    //Build Request for Employee Associations Lookup
                     HttpRequest employeeHttpRequest = HttpRequest.newBuilder()
                             .uri(URI.create(employeeURL))
                             .header("Authorization","Bearer " + _OAuth_Token)
@@ -945,6 +1021,65 @@ public class RosettaAPIWorker {
         return lEmployeeAssociations;
     }
 
+    public List<RosettaDepartment> GetRosettaDepartments()
+    {
+        //Var for List to Return
+        List<RosettaDepartment> lDepartments = new ArrayList<>();
+
+         //Initiate Object Mapper to Parse Returned Json
+        ObjectMapper joMapper = new ObjectMapper();
+
+        //Var for Search Result Limit
+        int nSrchRsltLimit = 3000;
+
+        //Check OAuth Token
+        if(CheckOAuthToken() == true)
+        {
+
+            //HttpClient for API Call to Rosetta API
+            try(HttpClient raHttpClient  = HttpClient.newHttpClient())
+            {
+                //Var for Departments URL
+                String departmentsURL =  Base_Url + "employee-association/departments?limit=" + Integer.toString(nSrchRsltLimit);
+
+                //Build Request for Departments Lookup
+                HttpRequest departmentsHttpRequest = HttpRequest.newBuilder()
+                        .uri(URI.create(departmentsURL))
+                        .header("Authorization","Bearer " + _OAuth_Token)
+                        .GET()
+                        .build();
+
+                //Send Departments Request 
+                HttpResponse<String> departmentsHttpResponse = raHttpClient.send(departmentsHttpRequest, HttpResponse.BodyHandlers.ofString());
+
+                //Check Return Status Code
+                if(departmentsHttpResponse.statusCode() == 200)
+                {
+
+                    //Create Json Object of Department Json Data
+                    JsonNode jnDepartmentsData = joMapper.readTree(departmentsHttpResponse.body());
+
+                    //Loop Through Employee Association Information
+                    for(JsonNode jnDepartment : jnDepartmentsData)
+                    {
+                        //Add Rosetta Department to Returned Department List
+                        lDepartments.add(ParseRosettaDepartmentJson(jnDepartment));
+                    }
+
+                }
+
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }//End of HttpClient
+
+        }//End of CheckOAuthToken
+        
+        return lDepartments;
+    }
+    
+    
+    
     public void ResourceStuffs()
     {
 

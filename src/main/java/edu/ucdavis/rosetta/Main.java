@@ -2,6 +2,10 @@ package edu.ucdavis.rosetta;
 
 import java.util.List;
 import java.lang.reflect.Field;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Main 
 {
@@ -48,8 +52,8 @@ public class Main
                 case "employee-subdivisionl4":
                     EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy.subdivisionl4id,args[1]);
                     break;
-                case "departments":
-                    ShowDepartments();
+                case "departments-export":
+                    ExportDepartments();
                     break;
                 default:
                     ShowArgumentOptions();
@@ -208,7 +212,7 @@ public class Main
             System.out.println("=========== " + rea.Employee_ID + " =============");
             System.out.println(" ");
 
-            //Pull Rosetta Person Class
+            //Pull Rosetta Employee Association Class
             Class<?> clazz = rea.getClass();
 
             //Loop Through Fields and Display Values
@@ -239,11 +243,56 @@ public class Main
     }
 
     //###############################
-    // Show Rosetta Departments
+    // Export Rosetta Departments
     //###############################
     
-    static void ShowDepartments()
+    static void ExportDepartments()
     {
+        //Initiate Rosetta API Worker
+        RosettaAPIWorker rosettaAPIWrkr = new RosettaAPIWorker();
+
+        //Pull Departments Information for Employee Associations
+        List<RosettaDepartment> lRosettaDepartments = rosettaAPIWrkr.GetRosettaDepartments();
+
+        //Var for Local Date Time
+        LocalDateTime ldt = LocalDateTime.now();
+
+        DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+        String rptFileName = "Departments-" + ldt.format(dtFormatter) + ".csv";
+
+        //Initiate Writer for Export File
+        try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(rosettaAPIWrkr.Export_Location + rptFileName)))
+        {   
+            //Write Header Row
+            bfWriter.write("Department_ID,Department_Title,Department_Short_Title,Subdivision_ID,Subdivision_Title,Subdivision_L4_ID,Subdivision_L4_Title,Division_ID,Division_Title,Organization_ID,Organization_Title,");
+            bfWriter.newLine();
+
+            //Loop Through Returned Rosetta Departments
+            for(RosettaDepartment rdept : lRosettaDepartments)
+            {
+                //Write Out Values to Reporting File
+                bfWriter.write(escapeCsv(rdept.Department_ID) + ",");
+                bfWriter.write(escapeCsv(rdept.Department_Title) + ",");
+                bfWriter.write(escapeCsv(rdept.Department_Short_Title) + ",");
+                bfWriter.write(escapeCsv(rdept.Subdivision_ID) + ",");
+                bfWriter.write(escapeCsv(rdept.Subdivision_Title) + ",");
+                bfWriter.write(escapeCsv(rdept.Subdivision_L4_ID) + ",");
+                bfWriter.write(escapeCsv(rdept.Subdivision_L4_Title) + ",");
+                bfWriter.write(escapeCsv(rdept.Division_ID) + ",");
+                bfWriter.write(escapeCsv(rdept.Division_Title) + ",");
+                bfWriter.write(escapeCsv(rdept.Organization_ID) + ",");
+                bfWriter.write(escapeCsv(rdept.Organization_Title) + ",");
+                bfWriter.newLine();
+            }
+
+            bfWriter.close();
+        }
+        catch(Exception eio)
+        {
+            System.out.println(eio.toString());
+        }
+
         
     }
 
@@ -266,8 +315,27 @@ public class Main
         System.out.println("employee-organization <organizationid>");
         System.out.println("employee-subdivision <subdivisionid>");
         System.out.println("employee-subdivisionl4 <subdivisionl4id>");
-        System.out.println("departments");
+        System.out.println("departments-export all");
         System.out.println(" ");
         System.out.println(" ");
+    }
+
+    //###############################
+    // Escape CSV Cell Values
+    //###############################
+    public static String escapeCsv(String value) 
+    {
+
+        if (value.contains("\"")) 
+        {
+            value = value.replace("\"", "\"\"");
+        }
+
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) 
+        {
+            value = "\"" + value + "\"";
+        }
+
+        return value;
     }
 }
