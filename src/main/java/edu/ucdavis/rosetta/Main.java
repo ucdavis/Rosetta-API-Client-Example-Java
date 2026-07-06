@@ -34,6 +34,21 @@ public class Main
                 case "people-department":
                     PeopleSearching(RosettaAPIWorker.PeopleSearchBy.department,args[1]);
                     break;
+                case "student-iam":
+                    StudentSearching(RosettaAPIWorker.StudentSearchBy.iamid, args[1]);
+                    break;
+                case "student-pidm":
+                    StudentSearching(RosettaAPIWorker.StudentSearchBy.pidm, args[1]);
+                    break;
+                case "student-studentid":
+                    StudentSearching(RosettaAPIWorker.StudentSearchBy.studentid, args[1]);
+                    break;
+                case "student-majorcode":
+                    StudentSearching(RosettaAPIWorker.StudentSearchBy.majorcode, args[1]);
+                    break;
+                case "student-collegecode":
+                    StudentSearching(RosettaAPIWorker.StudentSearchBy.collegecode, args[1]);
+                    break;
                 case "employee-iam":
                     EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy.iamid,args[1]);
                     break;
@@ -191,6 +206,56 @@ public class Main
 
     }
 
+    //##############################
+    // Student-Associations
+    //##############################
+    static void StudentSearching(RosettaAPIWorker.StudentSearchBy studentSearchBy,String searchTerm)
+    {
+        //Initiate Rosetta API Worker
+        RosettaAPIWorker rosettaAPIWrkr = new RosettaAPIWorker();
+
+        //Query Student Associations by Search Parameters
+        List<RosettaStudentAssociation> lRosettaStudentAssocs = rosettaAPIWrkr.GetStudentAssociationsBySearchTeam(studentSearchBy,searchTerm.trim());
+
+        //Loop Through Returned Rosetta Student Associations
+        for(RosettaStudentAssociation rsa : lRosettaStudentAssocs)
+        {
+            //For Readability
+            System.out.println(" ");
+            System.out.println("=========== " + rsa.IAM_ID + " =============");
+            System.out.println(" ");
+
+            //Pull Rosetta Employee Association Class
+            Class<?> clazz = rsa.getClass();
+
+            //Loop Through Fields and Display Values
+            for (Field field : clazz.getDeclaredFields()) 
+            {
+
+                //Set Accessability
+                field.setAccessible(true);
+
+                try
+                {
+                    System.out.println(field.getName() + " = " + field.get(rsa));
+                }
+                catch(IllegalAccessException e)
+                {
+                    System.out.println("error occured");
+                }
+            
+            }
+
+            //For Readability
+            System.out.println(" ");
+        }
+
+
+        System.out.println("Total Record Count: " + lRosettaStudentAssocs.size());
+    }
+
+
+
     //###############################
     // Employee-Associations
     //###############################
@@ -309,6 +374,11 @@ public class Main
         System.out.println("people-employee <employeeid>");
         System.out.println("people-student <studentid>");
         System.out.println("people-department <departmentcode>");
+        System.out.println("student-iam <iamid>");
+        System.out.println("student-pidm <pidm>");
+        System.out.println("student-studentid <studentid>");
+        System.out.println("student-majorcode <majorcode>");
+        System.out.println("student-collegecode <collegecode>");
         System.out.println("employee-iam <iamid>");
         System.out.println("employee-department <departmentcode>");
         System.out.println("employee-division <divisionid>");

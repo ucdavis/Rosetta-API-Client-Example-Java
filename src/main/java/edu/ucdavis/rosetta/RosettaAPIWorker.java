@@ -67,6 +67,15 @@ public class RosettaAPIWorker {
         organizationid
     }
 
+    public enum StudentSearchBy
+    {
+        iamid,
+        pidm,
+        studentid,
+        majorcode,
+        collegecode
+    }
+
     public boolean CheckOAuthToken()
     {
         //Var for Return Status
@@ -314,7 +323,7 @@ public class RosettaAPIWorker {
         //Retrieve Rank
         if(jeStudentAssoc.hasNonNull("rank"))
         {
-            rosettaStudentAssoc.IAM_ID = jeStudentAssoc.get("rank").asText();
+            rosettaStudentAssoc.Rank = jeStudentAssoc.get("rank").asText();
         }
 
         return rosettaStudentAssoc;
@@ -915,6 +924,110 @@ public class RosettaAPIWorker {
         while(bRetrMoreSrchRslts == true);
 
         return lRosettaPeople;
+    }
+
+    public List<RosettaStudentAssociation> GetStudentAssociationsBySearchTeam(StudentSearchBy searchBy,String searchTerm)
+    {
+        //Var for List to Return
+        List<RosettaStudentAssociation> lStudentAssociations = new ArrayList<>();
+
+        //Initiate Object Mapper to Parse Returned Json
+        ObjectMapper joMapper = new ObjectMapper();
+
+        //Var for Search Result Limit
+        int nSrchRsltLimit = 200;
+
+        //Var for Search Result Offset
+        int nSrchRsltOffset = 0;
+
+        //Var for Retrieve More Search Results
+        boolean bRetrMoreSrchRslts = true;
+
+        do
+        {
+            //Check OAuth Token
+            if(CheckOAuthToken() == true)
+            {
+
+                //HttpClient for API Call to Rosetta API
+                try(HttpClient raHttpClient  = HttpClient.newHttpClient())
+                {
+                    //Var for Student Associations URL
+                    String studentURL =  Base_Url + "student-association?"+ searchBy.toString() + "=" + searchTerm + "&offset=" + Integer.toString(nSrchRsltOffset) + "&limit=" + Integer.toString(nSrchRsltLimit) + "&count=true";
+
+                    //Build Request for Student Associations Lookup
+                    HttpRequest studentHttpRequest = HttpRequest.newBuilder()
+                            .uri(URI.create(studentURL))
+                            .header("Authorization","Bearer " + _OAuth_Token)
+                            .GET()
+                            .build();
+
+                    //Send Student Associations Request 
+                    HttpResponse<String> studentHttpResponse = raHttpClient.send(studentHttpRequest, HttpResponse.BodyHandlers.ofString());
+
+                    //Check Return Status Code
+                    if(studentHttpResponse.statusCode() == 200)
+                    {
+
+                        //Pull X-Total-Count and X-Response-Count Values
+                        if(studentHttpResponse.headers().firstValue("x-total-count").isPresent() &&
+                           studentHttpResponse.headers().firstValue("x-response-count").isPresent())
+                        {
+                            //Determine Header Values Counts
+                            int nTotalCnt = studentHttpResponse.headers().firstValue("x-total-count").map(Integer::parseInt).orElse(0);
+                            int nRspnCnt = studentHttpResponse.headers().firstValue("x-response-count").map(Integer::parseInt).orElse(0);
+
+                            //Check Total and Reponse Counts are Not Empty
+                            if(nTotalCnt > 0 && nRspnCnt > 0)
+                            {
+                                //Create Json Object of Student Associations Json Data
+                                JsonNode jnStudentsData = joMapper.readTree(studentHttpResponse.body());
+
+                                //Loop Through Student Association Information
+                                for(JsonNode jnStudent : jnStudentsData)
+                                {
+                                    //Add Rosetta Student Association to Returned Student List
+                                    lStudentAssociations.add(ParseRosettaStudentAssocJson(jnStudent));
+                                }
+
+                                //Increment Offset
+                                nSrchRsltOffset += nSrchRsltLimit;
+
+                                //Check Offset to Total Count
+                                if(nSrchRsltOffset >= nTotalCnt)
+                                {
+                                    bRetrMoreSrchRslts = false;
+                                }
+
+
+                            }
+                            else
+                            {
+                                bRetrMoreSrchRslts = false;
+                            }//End of nTotalCnt and nRspnCnt Empty Checks
+                            
+                        }
+                        else
+                        {
+                            bRetrMoreSrchRslts = false;
+                        }//End of Return Header Counts Checks
+                        
+                    }
+                    else
+                    {
+                        bRetrMoreSrchRslts = false;
+                    }//End of Status Code Check
+
+                }
+                catch (Exception e) {
+                    bRetrMoreSrchRslts = false;
+                }//End of HttpClient
+
+            }//End of CheckOAuthToken
+        }
+        while(bRetrMoreSrchRslts == true);
+
+        return lStudentAssociations;
     }
 
     public List<RosettaEmployeeAssociation> GetEmployeeAssociationsBySearchTerm(EmployeeSearchBy searchBy, String searchTerm)
