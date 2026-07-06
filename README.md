@@ -23,4 +23,7 @@ ROSETTA_SCOPES=obtain-from-the-identity-team
 # Rosetta Test IAM ID
 ROSETTA_TEST_ID=member-iam-id-to-test-with
 
+# Rosetta Export Location
+ROSETTA_EXPORT_LOCATION=determined-by-you
+
 ```
