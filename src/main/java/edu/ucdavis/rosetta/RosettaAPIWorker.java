@@ -675,112 +675,309 @@ public class RosettaAPIWorker {
         }//End of Provisioning Status
 
         //Retrieve Affiliation
-        if(jePeople.hasNonNull("affiliation") && jePeople.get("affiliation").isArray())
+        if(jePeople.hasNonNull("affiliation"))
         {
 
             //Retreive Affiliations
             JsonNode jeAffiliation = jePeople.get("affiliation");
 
-            //Loop Through Each Affiliation
-            for(JsonNode jeAffil : jeAffiliation)
+            //Retrieve Employee Affiliation
+            if(jeAffiliation.hasNonNull("employee"))
+            {
+                
+                //Confirm Employee Affiliation
+                if(jeAffiliation.get("employee").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Affiliation_Employee = true;
+                }
+                else
+                {
+                    rosettaPerson.Affiliation_Employee = false;
+                }
+                
+            }
+
+            //Retrieve Faculty Affiliation
+            if(jeAffiliation.hasNonNull("faculty"))
             {
 
-                switch(jeAffil.asText())
+                //Confirm Faculty Affiliation
+                if(jeAffiliation.get("faculty").asText().toUpperCase().equals("Y"))
                 {
+                    rosettaPerson.Affiliation_Faculty = true;
+                }
+                else
+                {
+                    rosettaPerson.Affiliation_Faculty = false;
+                }
+                
+            }
 
-                    case "employee":
-                        rosettaPerson.Affiliation_Employee = true;
-                        break;
-                    
-                    case "faculty":
-                        rosettaPerson.Affiliation_Faculty = true;
-                        break;
-                    
-                    case "temporary_affiliate":
-                        rosettaPerson.Affiliation_Temporary_Affiliate = true;
-                        break;
+            //Retrieve Temporary Affiliation
+            if(jeAffiliation.hasNonNull("temporary_affiliate"))
+            {
 
-                    case "student":
-                        rosettaPerson.Affiliation_Student = true;
-                        break;
+                //Confirm Temporary Affiliation
+                if(jeAffiliation.get("temporary_affiliate").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Affiliation_Temporary_Affiliate = true;
+                }
+                else
+                {
+                    rosettaPerson.Affiliation_Temporary_Affiliate = false;
+                }
+                
+            }
 
-                    case "student_applicant":
-                        rosettaPerson.Affiliation_Student_Applicant = true;
-                        break;
+            //Retrieve Student Affiliation
+            if(jeAffiliation.hasNonNull("student"))
+            {
 
-                    case "health_affiliate":
-                        rosettaPerson.Affiliation_Health_Affiliate = true;
-                        break;
+                //Confirm Student Affiliation
+                if(jeAffiliation.get("student").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Affiliation_Student = true;
+                }
+                else
+                {
+                    rosettaPerson.Affiliation_Student = false;
+                }
+                
+            }
 
-                }//End of jeAffil Switch Statement
+            //Retrieve Student Applicant Affiliation
+            if(jeAffiliation.hasNonNull("student_applicant"))
+            {
 
-            }//End of Affiliation Enumerate Array
+                //Confirm Student Affiliation
+                if(jeAffiliation.get("student_applicant").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Affiliation_Student_Applicant = true;
+                }
+                else
+                {
+                    rosettaPerson.Affiliation_Student_Applicant = false;
+                }
+                
+            }
+
+            //Retrieve Health Affiliation
+            if(jeAffiliation.hasNonNull("health_affiliate"))
+            {
+
+                //Confirm Health Affiliation
+                if(jeAffiliation.get("health_affiliate").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Affiliation_Health_Affiliate = true;
+                }
+                else
+                {
+                    rosettaPerson.Affiliation_Health_Affiliate = false;
+                }
+                
+            }
         
         }//End of Affiliations 
 
         //Retrieve Employment Status
-        if(jePeople.hasNonNull("employment_status") && jePeople.get("employment_status").isArray())
+        if(jePeople.hasNonNull("employment_status"))
         {
             //Retrieve Employment Statuses
             JsonNode jeEmploymentStatus = jePeople.get("employment_status");
 
-            //Loop Through Each Employment Status
-            for(JsonNode jeEmplStatus : jeEmploymentStatus)
+            //Retrieve Academic Status
+            if(jeEmploymentStatus.hasNonNull("is_academic"))
             {
-                switch(jeEmplStatus.asText())
+
+                //Confirm Academic Status
+                if(jeEmploymentStatus.get("is_academic").asText().toUpperCase().equals("Y"))
                 {
+                    rosettaPerson.Employment_Is_Academic = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Academic = false;
+                }
+                
+            }
 
-                    case "is_academic":
-                        rosettaPerson.Employment_Is_Academic = true;
-                        break;
-                    
-                    case "is_academic_senate":
-                        rosettaPerson.Employment_Is_Academic_Senate = true;
-                        break;
-                    
-                    case "is_academic_federation":
-                        rosettaPerson.Employment_Is_Academic_Federation = true;
-                        break;
+            //Retrieve Academic Senate Status
+            if(jeEmploymentStatus.hasNonNull("is_academic_senate"))
+            {
 
-                    case "is_faculty":
-                        rosettaPerson.Employment_Is_Faculty = true;
-                        break;
+                //Confirm Academic Senate Status
+                if(jeEmploymentStatus.get("is_academic_senate").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_Academic_Senate = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Academic_Senate = false;
+                }
+                
+            }
 
-                    case "is_teaching_faculty":
-                        rosettaPerson.Employment_Is_Teaching_Faculty = true;
-                        break;
+            //Retrieve Academic Federation Status
+            if(jeEmploymentStatus.hasNonNull("is_academic_federation"))
+            {
 
-                    case "is_ladder_rank":
-                        rosettaPerson.Employment_Is_Ladder_Rank = true;
-                        break;
+                //Confirm Academic Federation Status
+                if(jeEmploymentStatus.get("is_academic_federation").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_Academic_Federation = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Academic_Federation = false;
+                }
+                
+            }
 
-                    case "is_without_salary":
-                        rosettaPerson.Employment_Is_Without_Salary = true;
-                        break;
 
-                    case "is_msp":
-                        rosettaPerson.Employment_Is_MSP = true;
-                        break;
+            //Retrieve Faculty Status
+            if(jeEmploymentStatus.hasNonNull("is_faculty"))
+            {
 
-                    case "is_ssp":
-                        rosettaPerson.Employment_Is_SSP = true;
-                        break;
+                //Confirm Faculty Status
+                if(jeEmploymentStatus.get("is_faculty").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_Faculty = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Faculty = false;
+                }
+                
+            }
 
-                    case "is_manager":
-                        rosettaPerson.Employment_Is_Manager = true;
-                        break;
+            //Retrieve Teaching Faculty Status
+            if(jeEmploymentStatus.hasNonNull("is_teaching_faculty"))
+            {
 
-                    case "is_campus_employee":
-                        rosettaPerson.Employment_Is_Campus_Employee = true;
-                        break;
+                //Confirm Teaching Faculty Status
+                if(jeEmploymentStatus.get("is_teaching_faculty").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_Teaching_Faculty = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Teaching_Faculty = false;
+                }
+                
+            }
 
-                    case "is_health_employee":
-                        rosettaPerson.Employment_Is_Health_Employee = true;
-                        break;
+            //Retrieve Ladder Rank Status
+            if(jeEmploymentStatus.hasNonNull("is_ladder_rank"))
+            {
 
-                }//End of jeEmplStatus Switch Statement
+                //Confirm Ladder Rank Status
+                if(jeEmploymentStatus.get("is_ladder_rank").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_Ladder_Rank = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Ladder_Rank = false;
+                }
+                
+            }
 
-            }//End of Employment Status Enumerate Array
+            //Retrieve Without Salary Status
+            if(jeEmploymentStatus.hasNonNull("is_without_salary"))
+            {
+
+                //Confirm Without Salary Status
+                if(jeEmploymentStatus.get("is_without_salary").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_Without_Salary = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Without_Salary = false;
+                }
+                
+            }
+
+            //Retrieve MSP Status
+            if(jeEmploymentStatus.hasNonNull("is_msp"))
+            {
+                
+                //Confirm MSP Status
+                if(jeEmploymentStatus.get("is_msp").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_MSP = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_MSP = false;
+                }
+                
+            }
+
+            //Retrieve SSP Status
+            if(jeEmploymentStatus.hasNonNull("is_ssp"))
+            {
+
+                //Confirm SSP Status
+                if(jeEmploymentStatus.get("is_ssp").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_SSP = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_SSP = false;
+                }
+                
+            }
+
+            //Retrieve Manager Status
+            if(jeEmploymentStatus.hasNonNull("is_manager"))
+            {
+
+                //Confirm Manager Status
+                if(jeEmploymentStatus.get("is_manager").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_Manager = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Manager = false;
+                }
+                
+            }
+
+            //Retrieve Campus Employee Status
+            if(jeEmploymentStatus.hasNonNull("is_campus_employee"))
+            {
+
+                //Confirm Campus Employee Status
+                if(jeEmploymentStatus.get("is_campus_employee").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_Campus_Employee = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Campus_Employee = false;
+                }
+                
+            }
+
+            //Retrieve Health Employee Status
+            if(jeEmploymentStatus.hasNonNull("is_health_employee"))
+            {
+
+                //Confirm Health Employee Status
+                if(jeEmploymentStatus.get("is_health_employee").asText().toUpperCase().equals("Y"))
+                {
+                    rosettaPerson.Employment_Is_Health_Employee = true;
+                }
+                else
+                {
+                    rosettaPerson.Employment_Is_Health_Employee = false;
+                }
+                
+            }
+
 
         }//End of Employment Statuses
 
@@ -849,7 +1046,7 @@ public class RosettaAPIWorker {
                 try(HttpClient raHttpClient  = HttpClient.newHttpClient())
                 {
                     //Var for Accounts URL
-                    String peopleURL =  Base_Url + "people?"+ searchBy.toString() + "=" + searchTerm + "&offset=" + Integer.toString(nSrchRsltOffset) + "&limit=" + Integer.toString(nSrchRsltLimit) + "&count=true";
+                    String peopleURL =  Base_Url + "people?"+ searchBy.toString() + "=" + searchTerm + "&offset=" + Integer.toString(nSrchRsltOffset) + "&limit=" + Integer.toString(nSrchRsltLimit) + "&count=true"; //&affiliationState=all
 
                     //Build Request for People Lookup
                     HttpRequest peopleHttpRequest = HttpRequest.newBuilder()
