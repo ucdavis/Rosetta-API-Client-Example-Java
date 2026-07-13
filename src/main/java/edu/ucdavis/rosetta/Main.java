@@ -28,6 +28,9 @@ public class Main
                 case "people-employee":
                     PeopleSearching(RosettaAPIWorker.PeopleSearchBy.employeeid,args[1]);
                     break;
+                case "people-email":
+                    PeopleSearching(RosettaAPIWorker.PeopleSearchBy.email,args[1]);
+                    break;
                 case "people-student":
                     PeopleSearching(RosettaAPIWorker.PeopleSearchBy.studentid,args[1]);
                     break;
@@ -374,6 +377,7 @@ public class Main
         System.out.println("people-login <userid>");
         System.out.println("people-iam <iamid>");
         System.out.println("people-employee <employeeid>");
+        System.out.println("people-email <emailaddress>");
         System.out.println("people-student <studentid>");
         System.out.println("people-department <departmentcode>");
         System.out.println("student-iam <iamid>");
