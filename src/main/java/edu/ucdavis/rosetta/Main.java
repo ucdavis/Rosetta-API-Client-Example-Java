@@ -70,11 +70,11 @@ public class Main
                 case "employee-subdivisionl4":
                     EmployeeSearching(RosettaAPIWorker.EmployeeSearchBy.subdivisionl4id,args[1]);
                     break;
-                case "departments-export":
-                    ExportDepartments();
+                case "departments":
+                    ExportOrShowDepartments(args[1].toString());
                     break;
-                case "jobtypeids-export":
-                    ExportJobTypeIDs();
+                case "jobtypeids":
+                    ExportOrShowJobTypeIDs(args[1].toString());
                     break;
                 default:
                     ShowArgumentOptions();
@@ -315,11 +315,11 @@ public class Main
 
     }
 
-    //###############################
-    // Export Rosetta Departments
-    //###############################
+    //#####################################
+    // Export or Show Rosetta Departments
+    //#####################################
     
-    static void ExportDepartments()
+    static void ExportOrShowDepartments(String esAction)
     {
         //Initiate Rosetta API Worker
         RosettaAPIWorker rosettaAPIWrkr = new RosettaAPIWorker();
@@ -327,53 +327,95 @@ public class Main
         //Pull Departments Information for Employee Associations
         List<RosettaDepartment> lRosettaDepartments = rosettaAPIWrkr.GetRosettaDepartments();
 
-        //Var for Local Date Time
-        LocalDateTime ldt = LocalDateTime.now();
+        //Check for Action
+        if(esAction.trim().equalsIgnoreCase("export"))
+        {
+            
+            //Var for Local Date Time
+            LocalDateTime ldt = LocalDateTime.now();
 
-        DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+            DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-        String rptFileName = "Departments-" + ldt.format(dtFormatter) + ".csv";
+            String rptFileName = "Departments-" + ldt.format(dtFormatter) + ".csv";
 
-        //Initiate Writer for Export File
-        try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(rosettaAPIWrkr.Export_Location + rptFileName)))
-        {   
-            //Write Header Row
-            bfWriter.write("Department_ID,Department_Title,Department_Short_Title,Subdivision_ID,Subdivision_Title,Subdivision_L4_ID,Subdivision_L4_Title,Division_ID,Division_Title,Organization_ID,Organization_Title,");
-            bfWriter.newLine();
-
-            //Loop Through Returned Rosetta Departments
-            for(RosettaDepartment rdept : lRosettaDepartments)
-            {
-                //Write Out Values to Reporting File
-                bfWriter.write(escapeCsv(rdept.Department_ID));
-                bfWriter.write(escapeCsv(rdept.Department_Title));
-                bfWriter.write(escapeCsv(rdept.Department_Short_Title));
-                bfWriter.write(escapeCsv(rdept.Subdivision_ID));
-                bfWriter.write(escapeCsv(rdept.Subdivision_Title));
-                bfWriter.write(escapeCsv(rdept.Subdivision_L4_ID));
-                bfWriter.write(escapeCsv(rdept.Subdivision_L4_Title));
-                bfWriter.write(escapeCsv(rdept.Division_ID));
-                bfWriter.write(escapeCsv(rdept.Division_Title));
-                bfWriter.write(escapeCsv(rdept.Organization_ID));
-                bfWriter.write(escapeCsv(rdept.Organization_Title));
+            //Initiate Writer for Export File
+            try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(rosettaAPIWrkr.Export_Location + rptFileName)))
+            {   
+                //Write Header Row
+                bfWriter.write("Department_ID,Department_Title,Department_Short_Title,Subdivision_ID,Subdivision_Title,Subdivision_L4_ID,Subdivision_L4_Title,Division_ID,Division_Title,Organization_ID,Organization_Title,");
                 bfWriter.newLine();
+
+                //Loop Through Returned Rosetta Departments
+                for(RosettaDepartment rdept : lRosettaDepartments)
+                {
+                    //Write Out Values to Reporting File
+                    bfWriter.write(escapeCsv(rdept.Department_ID));
+                    bfWriter.write(escapeCsv(rdept.Department_Title));
+                    bfWriter.write(escapeCsv(rdept.Department_Short_Title));
+                    bfWriter.write(escapeCsv(rdept.Subdivision_ID));
+                    bfWriter.write(escapeCsv(rdept.Subdivision_Title));
+                    bfWriter.write(escapeCsv(rdept.Subdivision_L4_ID));
+                    bfWriter.write(escapeCsv(rdept.Subdivision_L4_Title));
+                    bfWriter.write(escapeCsv(rdept.Division_ID));
+                    bfWriter.write(escapeCsv(rdept.Division_Title));
+                    bfWriter.write(escapeCsv(rdept.Organization_ID));
+                    bfWriter.write(escapeCsv(rdept.Organization_Title));
+                    bfWriter.newLine();
+                }
+
+                bfWriter.close();
+            }
+            catch(Exception eio)
+            {
+                System.out.println(eio.toString());
             }
 
-            bfWriter.close();
         }
-        catch(Exception eio)
+        else
         {
-            System.out.println(eio.toString());
+
+            //Display Departments Information
+            for(RosettaDepartment rsd : lRosettaDepartments)
+            {
+                //For Readability
+                System.out.println(" ");
+                System.out.println("=========== " + rsd.Department_ID + " =============");
+                System.out.println(" ");
+
+                //Pull Rosetta Department Class
+                Class<?> clazz = rsd.getClass();
+
+                //Loop Through Fields and Display Values
+                for (Field field : clazz.getDeclaredFields()) 
+                {
+
+                    //Set Accessability
+                    field.setAccessible(true);
+
+                    try
+                    {
+                        System.out.println(field.getName() + " = " + field.get(rsd));
+                    }
+                    catch(IllegalAccessException e)
+                    {
+                        System.out.println("error occured");
+                    }
+                
+                }
+
+                //For Readability
+                System.out.println(" ");
+            }
+
         }
 
-        
     }
 
-    //##############################
-    // Export Rosetta JobTypeIDs
-    //##############################
+    //#####################################
+    // Export or Show Rosetta JobTypeIDs
+    //#####################################
 
-    static void ExportJobTypeIDs()
+    static void ExportOrShowJobTypeIDs(String esAction)
     {
         //Initiate Rosetta API Worker
         RosettaAPIWorker rosettaAPIWrkr = new RosettaAPIWorker();
@@ -381,36 +423,73 @@ public class Main
         //Pull JobTypeIDs Information for Employee Associations
         List<RosettaJobTypeID> lRosettaJobTypeIDs = rosettaAPIWrkr.GetRosettaJobTypeIDs();
 
-        //Var for Local Date Time
-        LocalDateTime ldt = LocalDateTime.now();
+        //Check for Action
+        if(esAction.trim().equalsIgnoreCase("export"))
+        {
+            //Var for Local Date Time
+            LocalDateTime ldt = LocalDateTime.now();
 
-        DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+            DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-        String rptFileName = "JobTypeIDs-" + ldt.format(dtFormatter) + ".csv";
+            String rptFileName = "JobTypeIDs-" + ldt.format(dtFormatter) + ".csv";
 
-        //Initiate Writer for Export File
-        try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(rosettaAPIWrkr.Export_Location + rptFileName)))
-        {   
-            //Write Header Row
-            bfWriter.write("Job_Type_ID,Job_Type_Description,");
-            bfWriter.newLine();
-
-            //Loop Through Returned Rosetta JobTypeIDs
-            for(RosettaJobTypeID rjtid : lRosettaJobTypeIDs)
-            {
-                //Write Out Values to Reporting File
-                bfWriter.write(escapeCsv(rjtid.Job_Type_ID));
-                bfWriter.write(escapeCsv(rjtid.Job_Type_Description));
+            //Initiate Writer for Export File
+            try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(rosettaAPIWrkr.Export_Location + rptFileName)))
+            {   
+                //Write Header Row
+                bfWriter.write("Job_Type_ID,Job_Type_Description,");
                 bfWriter.newLine();
+
+                //Loop Through Returned Rosetta JobTypeIDs
+                for(RosettaJobTypeID rjtid : lRosettaJobTypeIDs)
+                {
+                    //Write Out Values to Reporting File
+                    bfWriter.write(escapeCsv(rjtid.Job_Type_ID));
+                    bfWriter.write(escapeCsv(rjtid.Job_Type_Description));
+                    bfWriter.newLine();
+                }
+
+                bfWriter.close();
+            }
+            catch(Exception eio)
+            {
+                System.out.println(eio.toString());
             }
 
-            bfWriter.close();
         }
-        catch(Exception eio)
+        else
         {
-            System.out.println(eio.toString());
+            //Display JobTypeID Information
+            for(RosettaJobTypeID rjti : lRosettaJobTypeIDs)
+            {
+                //For Readability
+                System.out.println(" ");
+
+                //Pull Rosetta Job Type ID Class
+                Class<?> clazz = rjti.getClass();
+
+                //Loop Through Fields and Display Values
+                for (Field field : clazz.getDeclaredFields()) 
+                {
+
+                    //Set Accessability
+                    field.setAccessible(true);
+
+                    try
+                    {
+                        System.out.println(field.getName() + " = " + field.get(rjti));
+                    }
+                    catch(IllegalAccessException e)
+                    {
+                        System.out.println("error occured");
+                    }
+                
+                }
+
+            }
         }
 
+        
     }
 
     //###############################
@@ -438,8 +517,8 @@ public class Main
         System.out.println("employee-organization <organizationid>");
         System.out.println("employee-subdivision <subdivisionid>");
         System.out.println("employee-subdivisionl4 <subdivisionl4id>");
-        System.out.println("departments-export all");
-        System.out.println("jobtypeids-export all");
+        System.out.println("departments <export or show>");
+        System.out.println("jobtypeids  <export or show>");
         System.out.println(" ");
         System.out.println(" ");
     }
