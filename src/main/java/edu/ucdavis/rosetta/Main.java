@@ -73,6 +73,9 @@ public class Main
                 case "departments-export":
                     ExportDepartments();
                     break;
+                case "jobtypeids-export":
+                    ExportJobTypeIDs();
+                    break;
                 default:
                     ShowArgumentOptions();
                     break;
@@ -342,17 +345,17 @@ public class Main
             for(RosettaDepartment rdept : lRosettaDepartments)
             {
                 //Write Out Values to Reporting File
-                bfWriter.write(escapeCsv(rdept.Department_ID) + ",");
-                bfWriter.write(escapeCsv(rdept.Department_Title) + ",");
-                bfWriter.write(escapeCsv(rdept.Department_Short_Title) + ",");
-                bfWriter.write(escapeCsv(rdept.Subdivision_ID) + ",");
-                bfWriter.write(escapeCsv(rdept.Subdivision_Title) + ",");
-                bfWriter.write(escapeCsv(rdept.Subdivision_L4_ID) + ",");
-                bfWriter.write(escapeCsv(rdept.Subdivision_L4_Title) + ",");
-                bfWriter.write(escapeCsv(rdept.Division_ID) + ",");
-                bfWriter.write(escapeCsv(rdept.Division_Title) + ",");
-                bfWriter.write(escapeCsv(rdept.Organization_ID) + ",");
-                bfWriter.write(escapeCsv(rdept.Organization_Title) + ",");
+                bfWriter.write(escapeCsv(rdept.Department_ID));
+                bfWriter.write(escapeCsv(rdept.Department_Title));
+                bfWriter.write(escapeCsv(rdept.Department_Short_Title));
+                bfWriter.write(escapeCsv(rdept.Subdivision_ID));
+                bfWriter.write(escapeCsv(rdept.Subdivision_Title));
+                bfWriter.write(escapeCsv(rdept.Subdivision_L4_ID));
+                bfWriter.write(escapeCsv(rdept.Subdivision_L4_Title));
+                bfWriter.write(escapeCsv(rdept.Division_ID));
+                bfWriter.write(escapeCsv(rdept.Division_Title));
+                bfWriter.write(escapeCsv(rdept.Organization_ID));
+                bfWriter.write(escapeCsv(rdept.Organization_Title));
                 bfWriter.newLine();
             }
 
@@ -364,6 +367,50 @@ public class Main
         }
 
         
+    }
+
+    //##############################
+    // Export Rosetta JobTypeIDs
+    //##############################
+
+    static void ExportJobTypeIDs()
+    {
+        //Initiate Rosetta API Worker
+        RosettaAPIWorker rosettaAPIWrkr = new RosettaAPIWorker();
+
+        //Pull JobTypeIDs Information for Employee Associations
+        List<RosettaJobTypeID> lRosettaJobTypeIDs = rosettaAPIWrkr.GetRosettaJobTypeIDs();
+
+        //Var for Local Date Time
+        LocalDateTime ldt = LocalDateTime.now();
+
+        DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+        String rptFileName = "JobTypeIDs-" + ldt.format(dtFormatter) + ".csv";
+
+        //Initiate Writer for Export File
+        try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(rosettaAPIWrkr.Export_Location + rptFileName)))
+        {   
+            //Write Header Row
+            bfWriter.write("Job_Type_ID,Job_Type_Description,");
+            bfWriter.newLine();
+
+            //Loop Through Returned Rosetta JobTypeIDs
+            for(RosettaJobTypeID rjtid : lRosettaJobTypeIDs)
+            {
+                //Write Out Values to Reporting File
+                bfWriter.write(escapeCsv(rjtid.Job_Type_ID));
+                bfWriter.write(escapeCsv(rjtid.Job_Type_Description));
+                bfWriter.newLine();
+            }
+
+            bfWriter.close();
+        }
+        catch(Exception eio)
+        {
+            System.out.println(eio.toString());
+        }
+
     }
 
     //###############################
@@ -392,6 +439,7 @@ public class Main
         System.out.println("employee-subdivision <subdivisionid>");
         System.out.println("employee-subdivisionl4 <subdivisionl4id>");
         System.out.println("departments-export all");
+        System.out.println("jobtypeids-export all");
         System.out.println(" ");
         System.out.println(" ");
     }
@@ -399,19 +447,33 @@ public class Main
     //###############################
     // Escape CSV Cell Values
     //###############################
-    public static String escapeCsv(String value) 
+
+    public static String escapeCsv(String input)
     {
 
-        if (value.contains("\"")) 
-        {
-            value = value.replace("\"", "\"\"");
+        if (input == null || input.isEmpty()) {
+            return ",";
         }
 
-        if (value.contains(",") || value.contains("\"") || value.contains("\n")) 
-        {
-            value = "\"" + value + "\"";
+        String result = input;
+
+        if (result.startsWith("0") || result.startsWith("-")) {
+            result = "'" + result;
         }
 
-        return value;
+        boolean needsQuotes = result.contains(",") ||
+                            result.contains("\"") ||
+                            result.contains("\n") ||
+                            result.contains("\r");
+
+        if (result.contains("\"")) {
+            result = result.replace("\"", "\"\"");
+        }
+
+        if (needsQuotes) {
+            result = "\"" + result + "\"";
+        }
+
+        return result + ",";
     }
 }

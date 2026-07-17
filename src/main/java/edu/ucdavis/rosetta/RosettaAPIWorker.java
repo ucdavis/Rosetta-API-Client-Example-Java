@@ -143,6 +143,26 @@ public class RosettaAPIWorker {
         return bTokenStatus;
     }
 
+    public RosettaJobTypeID ParseRosettaJobTypeIDJson(JsonNode jeJobTypeID)
+    {
+        //Initialize JobTypeID Object to Return
+        RosettaJobTypeID rosettaJobTypeID = new RosettaJobTypeID();
+
+        //Retrieve Job Type ID
+        if(jeJobTypeID.hasNonNull("job_type_id"))
+        {
+            rosettaJobTypeID.Job_Type_ID = jeJobTypeID.get("job_type_id").asText();
+        }
+
+        //Retrieve Job Type Description
+        if(jeJobTypeID.hasNonNull("job_type_description"))
+        {
+            rosettaJobTypeID.Job_Type_Description = jeJobTypeID.get("job_type_description").asText();
+        }
+
+        return rosettaJobTypeID;
+    }
+
     public RosettaDepartment ParseRosettaDepartmentJson(JsonNode jeDepartment)
     {
         //Initialize Department to Return
@@ -1331,12 +1351,13 @@ public class RosettaAPIWorker {
         return lEmployeeAssociations;
     }
 
+    
     public List<RosettaDepartment> GetRosettaDepartments()
     {
         //Var for List to Return
         List<RosettaDepartment> lDepartments = new ArrayList<>();
 
-         //Initiate Object Mapper to Parse Returned Json
+        //Initiate Object Mapper to Parse Returned Json
         ObjectMapper joMapper = new ObjectMapper();
 
         //Var for Search Result Limit
@@ -1388,5 +1409,58 @@ public class RosettaAPIWorker {
         return lDepartments;
     }
     
+    public List<RosettaJobTypeID> GetRosettaJobTypeIDs()
+    {
+        //Var for List to Return
+        List<RosettaJobTypeID> lJobTypeIDs = new ArrayList<>();
+
+        //Initiate Object Mapper to Parse Returned Json
+        ObjectMapper joMapper = new ObjectMapper();
+
+        //Check OAuth Token
+        if(CheckOAuthToken() == true)
+        {
+
+            //HttpClient for API Call to Rosetta API
+            try(HttpClient raHttpClient  = HttpClient.newHttpClient())
+            {
+                //Var for JobTypeIDs URL
+                String jobtypeidsURL =  Base_Url + "employee-association/jobtypeids?";
+
+                //Build Request for Job Type IDs Lookup
+                HttpRequest jobtypeidsHttpRequest = HttpRequest.newBuilder()
+                        .uri(URI.create(jobtypeidsURL))
+                        .header("Authorization","Bearer " + _OAuth_Token)
+                        .GET()
+                        .build();
+
+                //Send Job Type IDs Request 
+                HttpResponse<String> jobtypeidsHttpResponse = raHttpClient.send(jobtypeidsHttpRequest, HttpResponse.BodyHandlers.ofString());
+
+                //Check Return Status Code
+                if(jobtypeidsHttpResponse.statusCode() == 200)
+                {
+
+                    //Create Json Object of JobTypeIDs Json Data
+                    JsonNode jnJobTypeIDsData = joMapper.readTree(jobtypeidsHttpResponse.body());
+
+                    //Loop Through JobTypeID Information
+                    for(JsonNode jnJobTypeIDInfo : jnJobTypeIDsData)
+                    {
+                        //Add Rosetta JobTypeID Information to Returned List
+                        lJobTypeIDs.add(ParseRosettaJobTypeIDJson(jnJobTypeIDInfo));
+                    }
+
+                }
+
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }//End of HttpClient
+
+        }//End of CheckOAuthToken
+
+        return lJobTypeIDs;
+    }
 
 }
